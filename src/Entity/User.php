@@ -5,11 +5,12 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
 use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
- * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="type", type="string")
  * @ORM\DiscriminatorMap({"user" = "User", "admin" = "Admin", "formateur" = "Formateur", "cm" = "Cm", "apprenant" = "Apprenant"})
  * @ApiResource()
@@ -28,9 +29,6 @@ class User implements UserInterface
      */
     private $email;
 
-    /**
-     * @ORM\Column(type="json")
-     */
     private $roles = [];
 
     /**
@@ -41,11 +39,13 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
+     *  @Groups({"profil:read"})
      */
     private $nom;
 
     /**
      * @ORM\Column(type="string", length=255)
+     *  @Groups({"profil:read"})
      */
     private $prenom;
 
@@ -98,7 +98,7 @@ class User implements UserInterface
     {
         $roles = $this->roles;
         // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
+        $roles [] = 'ROLE_'.$this->profil->getLibelle();
 
         return array_unique($roles);
     }

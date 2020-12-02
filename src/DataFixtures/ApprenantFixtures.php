@@ -2,7 +2,7 @@
 
 namespace App\DataFixtures;
 
- 
+
 use Faker\Factory;
 use App\Entity\Apprenant;
 use App\DataFixtures\ProfileFixtures;

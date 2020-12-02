@@ -2,15 +2,17 @@
 
 namespace App\Entity;
 
-use App\Repository\TagRepository;
+use ApiPlatform\Core\Annotation\ApiResource;
+use App\Repository\GroupTagRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=TagRepository::class)
+ * @ApiResource()
+ * @ORM\Entity(repositoryClass=GroupTagRepository::class)
  */
-class Tag
+class GroupTag
 {
     /**
      * @ORM\Id
@@ -25,18 +27,18 @@ class Tag
     private $libelle;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="string", length=255)
      */
     private $description;
 
     /**
-     * @ORM\ManyToMany(targetEntity=GroupTag::class, mappedBy="tag")
+     * @ORM\ManyToMany(targetEntity=Tag::class, inversedBy="groupTags")
      */
-    private $groupTags;
+    private $tag;
 
     public function __construct()
     {
-        $this->groupTags = new ArrayCollection();
+        $this->tag = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -69,28 +71,25 @@ class Tag
     }
 
     /**
-     * @return Collection|GroupTag[]
+     * @return Collection|Tag[]
      */
-    public function getGroupTags(): Collection
+    public function getTag(): Collection
     {
-        return $this->groupTags;
+        return $this->tag;
     }
 
-    public function addGroupTag(GroupTag $groupTag): self
+    public function addTag(Tag $tag): self
     {
-        if (!$this->groupTags->contains($groupTag)) {
-            $this->groupTags[] = $groupTag;
-            $groupTag->addTag($this);
+        if (!$this->tag->contains($tag)) {
+            $this->tag[] = $tag;
         }
 
         return $this;
     }
 
-    public function removeGroupTag(GroupTag $groupTag): self
+    public function removeTag(Tag $tag): self
     {
-        if ($this->groupTags->removeElement($groupTag)) {
-            $groupTag->removeTag($this);
-        }
+        $this->tag->removeElement($tag);
 
         return $this;
     }

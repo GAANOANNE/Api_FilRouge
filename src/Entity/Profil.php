@@ -7,10 +7,52 @@ use App\Repository\ProfilRepository;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=ProfilRepository::class)
- * @ApiResource()
+ * @ApiResource(
+ * attributes = {
+ *              "security" = "is_granted('ROLE_ADMIN')",
+ *              "security_message" = "Accès refusé!"
+ *       },
+ * normalizationContext ={"groups"={"profil:read"}},
+ * collectionOperations = {
+ *      "getProfils" = {
+ *              "method"= "GET",
+ *              "path" = "/admin/profils"
+ *              
+ *       },
+ *       
+ *       "addProfil" = {
+ *              "method"= "POST",
+ *              "path" = "/admin/profils",
+ *              "normalization_context"={"groups"={"profil:write"}}   
+ *       },
+ * },
+ * 
+ * itemOperations = {
+ *      "getUsersOfProfil" = {
+ *              "method"= "GET",
+ *              "path" = "/admin/profils/{id}/users/"
+ *              
+ *       },
+ *      "getProfilById" = {
+ *              "method"= "GET",
+ *              "path" = "/admin/profils/{id}"
+ *              
+ *       },
+ *      "editProfil"={
+ *          "method"= "PUT",
+ *          "path"= "/admin/profils/{id}"
+ *      },
+ *      "deleteProfil"={
+ *          "method"= "DELETE",
+ *          "path"= "/admin/profils/{id}"
+ *      },
+ * 
+ * },
+ * )
  */
 class Profil
 {
@@ -23,6 +65,7 @@ class Profil
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"profil:read"})
      */
     private $libelle;
 
@@ -33,6 +76,7 @@ class Profil
 
     /**
      * @ORM\OneToMany(targetEntity=User::class, mappedBy="profil")
+     *  @Groups({"profil:read"})
      */
     private $users;
 
